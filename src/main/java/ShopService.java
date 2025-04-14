@@ -12,10 +12,10 @@ public class ShopService {
         List<Product> products = new ArrayList<>();
         for (String productId : productIds) {
            Optional <Product> productToOrder = productRepo.getProductById(productId);
-           if(productToOrder.isEmpty()){
-               System.out.println("Product mit der Id: " + productId + " konnte nicht bestellt werden!");
-               return null;
-           }
+            if (productToOrder.isEmpty()) {
+                throw new ProductNotFoundException(productId);
+            }
+            products.add(productToOrder.get());
            }
         Order newOrder = new Order(UUID.randomUUID().toString(), products, orderStatus);
         return orderRepo.addOrder(newOrder);

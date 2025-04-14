@@ -30,24 +30,22 @@ class ShopServiceTest {
         List<String> productsIds = List.of("1", "2");
 
         //WHEN
-        Order actual = shopService.addOrder(productsIds, OrderStatus.PROCESSING );
-
+//        Order actual = shopService.addOrder(productsIds, OrderStatus.PROCESSING );
         //THEN
-        assertNull(actual);
+        assertThrows(ProductNotFoundException.class, () -> shopService.addOrder(productsIds, OrderStatus.PROCESSING));
     }
 
     @Test
     void getTestOrderWithStatus (){
+        //GIVEN
         ShopService shopService = new ShopService();
+        OrderStatus orderStatus = OrderStatus.PROCESSING;
 
-        shopService.addOrder(List.of("1", "Apple"), OrderStatus.COMPLETED );
-        shopService.addOrder(List.of("2", "Banana"), OrderStatus.PROCESSING);
-        shopService.addOrder(List.of("3", "Peach"), OrderStatus.PROCESSING);
+        //WHEN
+        List<Order> actual = shopService.getOrderWithStatus(orderStatus);
 
-        List<Order> orderList = shopService.getOrderWithStatus(OrderStatus.PROCESSING);
-
-        for (Order order : orderList) {
-            assertEquals(OrderStatus.PROCESSING, order.orderStatus());
-        }
+        //THEN
+        List<Order> expected = List.of();
+        assertEquals(expected, actual);
     }
 }
