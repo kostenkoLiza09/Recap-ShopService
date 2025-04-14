@@ -1,41 +1,39 @@
+import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ShopService {
     private ProductRepo productRepo = new ProductRepo();
     private OrderRepo orderRepo = new OrderMapRepo();
 
-    public Order addOrder(List<String> productIds, OrderStatus orderStatus) {
+    public Order addOrder (List<String> productIds) {
         List<Product> products = new ArrayList<>();
+
         for (String productId : productIds) {
-           Optional <Product> productToOrder = productRepo.getProductById(productId);
-            if (productToOrder.isEmpty()) {
-                throw new ProductNotFoundException(productId);
+            Product productToOrder = productRepo.getProductById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+            if (productToOrder == null) {
+                System.out.println("Product mit der Id: " + productId + " konnte nicht bestellt wenden! ");
+                return null;
             }
-            products.add(productToOrder.get());
-           }
-        Order newOrder = new Order(UUID.randomUUID().toString(), products, orderStatus);
+            products.add(productToOrder);
+        }
+        Order newOrder = new Order(UUID.randomUUID().toString(), products, OrderStatus.PROCESSING, Instant.now());
         return orderRepo.addOrder(newOrder);
-    }
+}
+
+
 
     public List<Order> getOrderWithStatus(OrderStatus orderStatus){
-
-        List<Order> orders = orderRepo.getOrders();
-
-        List<Order> ordersByStatus = orders.stream()
-                .filter(o -> o.orderStatus() == orderStatus)
-                .collect(Collectors.toList());
-
-        return ordersByStatus;
+        return orderRepo.getOrders()
+                .stream()
+                .filter(o -> o.orderStatus().equals(orderStatus))
+                .toList();
 
     }
 
-    public Order updateOrder(String orderId,OrderStatus newStatus) throws OrderNotFoundException {
-        Order order  = orderRepo.getOrderById(orderId);
-        if (order ==  null) {
-            throw new OrderNotFoundException (orderId);
-        }
-        Order updatedOrder =  order.withOrderStatus(newStatus );
-        return orderRepo.addOrder(updatedOrder);
+    public OrderStatus updateStatus(String id, OrderStatus status) {
+        Order order = orderRepo.getOrderById(id).withOrderStatus(status);
+        orderRepo.removeOrder(id);
+        orderRepo.addOrder(order);
+        return order.orderStatus();
     }
 }

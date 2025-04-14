@@ -17,7 +17,7 @@ public class ProductRepo {
     public Optional<Product> getProductById(String id) {
         for (Product product : products) {
             if (product.id().equals(id)) {
-                return Optional.of(product);
+                return Optional.ofNullable(product);
             }
         }
         return Optional.empty();
