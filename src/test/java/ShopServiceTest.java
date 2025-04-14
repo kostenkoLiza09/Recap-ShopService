@@ -36,7 +36,7 @@ class ShopServiceTest {
     }
 
     @Test
-    void getTestOrderWithStatus (){
+    void getTestOrderWithStatus () {
         //GIVEN
         ShopService shopService = new ShopService();
         OrderStatus orderStatus = OrderStatus.PROCESSING;

@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ShopService {
@@ -31,5 +28,14 @@ public class ShopService {
 
         return ordersByStatus;
 
+    }
+
+    public Order updateOrder(String orderId,OrderStatus newStatus) throws OrderNotFoundException {
+        Order order  = orderRepo.getOrderById(orderId);
+        if (order ==  null) {
+            throw new OrderNotFoundException (orderId);
+        }
+        Order updatedOrder =  order.withOrderStatus(newStatus );
+        return orderRepo.addOrder(updatedOrder);
     }
 }
